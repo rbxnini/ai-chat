@@ -8,7 +8,7 @@ class OllamaService
     body = {
       model: 'gemma3:1b',
       messages: [{ role: 'user', content: message }],
-      stream: false
+      stream: true
     }
 
     res = Net::HTTP.post(uri, body.to_json, 'Content-Type' => 'application/json')

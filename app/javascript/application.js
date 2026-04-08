@@ -42,3 +42,7 @@ btn.addEventListener('click', async () => {
   box.lastChild.textContent = data.response
   btn.disabled = false
 })
+
+document.addEventListener('DOMContentLoaded', () => {
+  box.scrollTop = box.scrollHeight
+})
