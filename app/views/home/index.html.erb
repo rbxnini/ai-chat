@@ -1,7 +1,12 @@
 <div class="sidebar">
+  <button id="new-chat" onclick="newConversation()">+ Novo chat</button>
   <h2>Histórico</h2>
   <div class="chat-history">
-    <div class="chat-item">Chat 1</div>
+    <% @conversations.each do |conv| %>
+      <div class="chat-item">
+        <a href="/?conversation_id=<%= conv.id %>"><%= conv.title %></a>
+      </div>
+    <% end %>
   </div>
 </div>
 
@@ -13,6 +18,8 @@
       </div>
     <% end %>
   </div>
+
+  <input type="hidden" id="conversation-id" value="<%= @current_conversation&.id %>">
 
   <div class="input-area">
     <input type="text" id="input" placeholder="Digite sua mensagem...">

@@ -5,6 +5,10 @@ const input = document.getElementById('input')
 const btn   = document.getElementById('send')
 const box   = document.getElementById('chat-box')
 
+function getConversationId() {
+  return document.getElementById('conversation-id')?.value
+}
+
 function addMessage(text, type) {
   const div = document.createElement('div')
   div.classList.add('message', type)
@@ -13,36 +17,56 @@ function addMessage(text, type) {
   box.scrollTop = box.scrollHeight
 }
 
-input.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    btn.click()
-  }
-})
-
-btn.addEventListener('click', async () => {
-  const text = input.value.trim()
-  if (!text) return
-
-  addMessage(text, 'user')
-  input.value = ''
-  btn.disabled = true
-
-  addMessage('...', 'bot')
-
-  const res = await fetch('/chat', {
+function newConversation() {
+  fetch('/new_conversation', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
       'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-    },
-    body: JSON.stringify({ message: text })
+    }
+  }).then(() => window.location.href = '/')
+}
+
+if (input && btn && box) {
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') btn.click()
   })
 
-  const data = await res.json()
-  box.lastChild.textContent = data.response
-  btn.disabled = false
-})
+  btn.addEventListener('click', async () => {
+    const text = input.value.trim()
+    if (!text) return
 
-document.addEventListener('DOMContentLoaded', () => {
-  box.scrollTop = box.scrollHeight
-})
+    addMessage(text, 'user')
+    input.value = ''
+    btn.disabled = true
+
+    addMessage('...', 'bot')
+
+    try {
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          message: text,
+          conversation_id: getConversationId()
+        })
+      })
+
+      const data = await res.json()
+      box.lastChild.textContent = data.response
+
+    } catch (err) {
+      box.lastChild.textContent = "Erro ao responder 😢"
+      console.error(err)
+    }
+
+    btn.disabled = false
+  })
+
+  document.addEventListener('DOMContentLoaded', () => {
+    box.scrollTop = box.scrollHeight
+  })
+}

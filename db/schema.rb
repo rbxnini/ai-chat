@@ -10,11 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_08_112002) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_08_122135) do
+  create_table "conversations", force: :cascade do |t|
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "messages", force: :cascade do |t|
     t.string "role"
     t.text "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "conversation_id"
+    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
   end
+
+  add_foreign_key "messages", "conversations"
 end
