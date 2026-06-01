@@ -1,13 +1,17 @@
 class HomeController < ApplicationController
   def index
-    @conversations = Conversation.all
-    @current_conversation = Conversation.find_by(id: params[:conversation_id]) || Conversation.last
-    @messages = @current_conversation&.messages || []
+    @conversations = Conversation.order(updated_at: :desc)
+    @current_conversation = Conversation.find_by(id: params[:conversation_id]) || Conversation.last || Conversation.create(title: "Chat 1")
+    @messages = @current_conversation.messages.order(:created_at)
   end
 
   def new_conversation
     conversation = Conversation.create(title: "Chat #{Conversation.count + 1}")
-    redirect_to root_path(conversation_id: conversation.id)
+
+    respond_to do |format|
+      format.html { redirect_to root_path(conversation_id: conversation.id) }
+      format.json { render json: { id: conversation.id } }
+    end
   end
 
   def chat

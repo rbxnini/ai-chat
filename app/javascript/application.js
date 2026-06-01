@@ -15,15 +15,24 @@ function addMessage(text, type) {
   div.textContent = text
   box.appendChild(div)
   box.scrollTop = box.scrollHeight
+  return div
 }
 
 function newConversation() {
   fetch('/new_conversation', {
     method: 'POST',
     headers: {
-      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+      'Accept': 'application/json'
     }
-  }).then(() => window.location.href = '/')
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.id) {
+        window.location.href = '/?conversation_id=' + data.id
+      }
+    })
 }
 
 if (input && btn && box) {
@@ -39,8 +48,9 @@ if (input && btn && box) {
     addMessage(text, 'user')
     input.value = ''
     btn.disabled = true
+    input.disabled = true
 
-    addMessage('...', 'bot')
+    const thinkingMessage = addMessage('Thinking...', 'bot')
 
     try {
       const res = await fetch('/chat', {
@@ -56,14 +66,16 @@ if (input && btn && box) {
       })
 
       const data = await res.json()
-      box.lastChild.textContent = data.response
+      thinkingMessage.textContent = data.response
 
     } catch (err) {
-      box.lastChild.textContent = "Erro ao responder 😢"
+      thinkingMessage.textContent = "Erro ao responder 😢"
       console.error(err)
     }
 
     btn.disabled = false
+    input.disabled = false
+    input.focus()
   })
 
   document.addEventListener('DOMContentLoaded', () => {
