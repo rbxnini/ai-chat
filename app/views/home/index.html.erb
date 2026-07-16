@@ -1,10 +1,11 @@
 <div class="sidebar">
-  <button id="new-chat" onclick="newConversation()">+ Novo chat</button>
+  <button id="new-chat" class="new-chat-button" type="button">+ Novo chat</button>
   <h2>Histórico</h2>
   <div class="chat-history">
     <% @conversations.each do |conv| %>
       <div class="chat-item">
         <a href="/?conversation_id=<%= conv.id %>"><%= conv.title %></a>
+        <button class="delete-chat" type="button" data-conversation-id="<%= conv.id %>" aria-label="Excluir chat">×</button>
       </div>
     <% end %>
   </div>
@@ -13,6 +14,7 @@
 <div class="main">
   <div class="chat-header">
     <h1><%= @current_conversation.title %></h1>
+    <p>Seu assistente com memória de contexto e preferências.</p>
   </div>
 
   <div class="chat-box" id="chat-box">
@@ -27,6 +29,6 @@
 
   <div class="input-area">
     <input type="text" id="input" placeholder="Digite sua mensagem...">
-    <button id="send">Enviar</button>
+    <button id="send" type="button">Enviar</button>
   </div>
 </div>
